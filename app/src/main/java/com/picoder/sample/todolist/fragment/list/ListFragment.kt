@@ -5,6 +5,7 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.picoder.sample.todolist.R
+import com.picoder.sample.todolist.utils.hideKeyboard
 import kotlinx.android.synthetic.main.fragment_list.view.*
 
 
@@ -23,7 +24,11 @@ class ListFragment : Fragment() {
             findNavController().navigate(R.id.action_listFragment_to_updateFragment)
         }
 
+        // set menu
         setHasOptionsMenu(true)
+
+        // hide soft keyboard
+        hideKeyboard(requireActivity())
 
         return view
     }
