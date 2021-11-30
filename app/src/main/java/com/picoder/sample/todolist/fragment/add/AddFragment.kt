@@ -11,12 +11,16 @@ import com.picoder.sample.todolist.R
 import com.picoder.sample.todolist.data.model.ToDoData
 import com.picoder.sample.todolist.data.model.toPriority
 import com.picoder.sample.todolist.data.viewmodel.ToDoViewModel
+import com.picoder.sample.todolist.fragment.SharedViewModel
 import kotlinx.android.synthetic.main.fragment_add.*
+import kotlinx.android.synthetic.main.fragment_add.view.*
 
 
 class AddFragment : Fragment() {
 
-    private val todoViewModel:ToDoViewModel by viewModels()
+    private val todoViewModel: ToDoViewModel by viewModels()
+
+    private val sharedViewModel: SharedViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -25,7 +29,10 @@ class AddFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_add, container, false)
 
+        // set menu
         setHasOptionsMenu(true)
+
+        view.spinnerPriority.onItemSelectedListener = sharedViewModel.listener
 
         return view
     }
@@ -46,23 +53,17 @@ class AddFragment : Fragment() {
         val priority = spinnerPriority.selectedItem.toString()
         val description = edtDescription.text.toString()
 
-        val validate = validateDataFromInput(title, description)
+        val validate = sharedViewModel.validateDataFromInput(title, description)
         if (validate) {
             val newToDoData = ToDoData(0, title, priority.toPriority(), description)
             todoViewModel.insertData(newToDoData)
-            Toast.makeText(requireContext(),"Successfully Added!",Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), "Successfully Added!", Toast.LENGTH_LONG).show()
             // back to list
             findNavController().navigate(R.id.action_addFragment_to_listFragment)
 
         } else {
-            Toast.makeText(requireContext(),"Please input data",Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), "Please input data", Toast.LENGTH_LONG).show()
         }
 
-    }
-
-    private fun validateDataFromInput(title: String, description: String): Boolean {
-        return if (TextUtils.isEmpty(title) || TextUtils.isEmpty(description)) {
-            false
-        } else !(title.isEmpty() || description.isEmpty())
     }
 }
