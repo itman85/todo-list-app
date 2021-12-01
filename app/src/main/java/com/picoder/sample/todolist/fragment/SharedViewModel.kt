@@ -14,7 +14,7 @@ import com.picoder.sample.todolist.data.model.ToDoData
 
 class SharedViewModel(application: Application) : AndroidViewModel(application) {
 
-    val emptyDatabase : MutableLiveData<Boolean> = MutableLiveData(true)
+    val emptyDatabase : MutableLiveData<Boolean> = MutableLiveData(false)
 
     fun checkIfDataEmpty(toDoData: List<ToDoData>){
         emptyDatabase.value = toDoData.isEmpty()

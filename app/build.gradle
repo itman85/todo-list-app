@@ -26,9 +26,10 @@ android {
         }
     }
 
-    /*buildFeatures{
+    buildFeatures{
         dataBinding = true
-    }*/
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -55,6 +56,10 @@ dependencies {
     kapt 'androidx.room:room-compiler:2.3.0'
     implementation 'androidx.room:room-ktx:2.3.0'
     androidTestImplementation 'androidx.room:room-testing:2.3.0'
+
+    // data binding
+    kapt 'androidx.databinding:databinding-common:7.0.3'
+    kapt 'com.android.databinding:compiler:3.5.0'
 
 
     testImplementation 'junit:junit:4.+'

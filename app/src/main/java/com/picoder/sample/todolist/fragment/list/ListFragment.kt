@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.picoder.sample.todolist.R
 import com.picoder.sample.todolist.data.viewmodel.ToDoViewModel
+import com.picoder.sample.todolist.databinding.FragmentListBinding
 import com.picoder.sample.todolist.fragment.SharedViewModel
 import com.picoder.sample.todolist.utils.hideKeyboard
 import kotlinx.android.synthetic.main.fragment_list.view.*
@@ -22,6 +23,10 @@ class ListFragment : Fragment() {
 
     private val sharedViewModel: SharedViewModel by viewModels()
 
+    private var _binding: FragmentListBinding? = null
+
+    private val binding get() = _binding!! // access binding readonly
+
     private val adapter: ListAdapter by lazy { ListAdapter() }
 
     override fun onCreateView(
@@ -29,24 +34,29 @@ class ListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_list, container, false)
+        _binding = FragmentListBinding.inflate(inflater, container, false)
+        //val view = inflater.inflate(R.layout.fragment_list, container, false)
+        binding.lifecycleOwner = this // this will allow binding live data in binding adapter
+        binding.shareViewModel = sharedViewModel
 
-        val recyclerView = view.recyclerView
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        setupRecyclerView()
 
         todoViewModel.getAllData.observe(viewLifecycleOwner, Observer { data ->
             sharedViewModel.checkIfDataEmpty(data)
             adapter.setData(data)
         })
 
+        /*
+        // use data binding adapter instead
         sharedViewModel.emptyDatabase.observe(viewLifecycleOwner, {
             showEmptyDataView(it)
-        })
+        })*/
 
+        /*
+        // use data binding adapter instead
         view.floatingActionButton.setOnClickListener {
             findNavController().navigate(R.id.action_listFragment_to_addFragment)
-        }
+        }*/
 
 
         // set menu
@@ -55,9 +65,21 @@ class ListFragment : Fragment() {
         // hide soft keyboard
         hideKeyboard(requireActivity())
 
-        return view
+        return binding.root
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null // avoid memory leak
+    }
+
+    private fun setupRecyclerView() {
+        val recyclerView = binding.recyclerView
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+    }
+
+    /*
     private fun showEmptyDataView(isEmpty: Boolean) {
         if (isEmpty) {
             view?.iv_no_data?.visibility = View.VISIBLE
@@ -66,7 +88,7 @@ class ListFragment : Fragment() {
             view?.iv_no_data?.visibility = View.INVISIBLE
             view?.tv_no_data?.visibility = View.INVISIBLE
         }
-    }
+    }*/
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.list_fragment_menu, menu)
