@@ -8,6 +8,11 @@ class ToDoRepository(private val toDoDao: ToDoDao) {
 
     val getAllData: LiveData<List<ToDoData>> = toDoDao.getAllData()
 
+    val sortByHighPriority: LiveData<List<ToDoData>> = toDoDao.sortByHighPriority()
+
+    val sortByLowPriority: LiveData<List<ToDoData>> = toDoDao.sortByLowPriority()
+
+
     suspend fun insertData(toDoData: ToDoData) {
         toDoDao.insertData(toDoData)
     }
@@ -20,7 +25,11 @@ class ToDoRepository(private val toDoDao: ToDoDao) {
         toDoDao.deleteItem(toDoData)
     }
 
-    suspend fun deleteAll(){
+    suspend fun deleteAll() {
         toDoDao.deleteAll()
+    }
+
+    fun searchData(keyword: String): LiveData<List<ToDoData>> {
+        return toDoDao.searchData("%$keyword%")
     }
 }
