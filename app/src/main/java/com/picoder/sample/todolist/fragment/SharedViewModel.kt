@@ -14,9 +14,9 @@ import com.picoder.sample.todolist.data.model.ToDoData
 
 class SharedViewModel(application: Application) : AndroidViewModel(application) {
 
-    val emptyDatabase : MutableLiveData<Boolean> = MutableLiveData(false)
+    val emptyDatabase: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    fun checkIfDataEmpty(toDoData: List<ToDoData>){
+    fun checkIfDataEmpty(toDoData: List<ToDoData>) {
         emptyDatabase.value = toDoData.isEmpty()
     }
 
@@ -51,8 +51,6 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun validateDataFromInput(title: String, description: String): Boolean {
-        return if (TextUtils.isEmpty(title) || TextUtils.isEmpty(description)) {
-            false
-        } else !(title.isEmpty() || description.isEmpty())
+        return !(title.isEmpty() || description.isEmpty())
     }
 }

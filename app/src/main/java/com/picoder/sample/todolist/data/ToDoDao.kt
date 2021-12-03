@@ -8,7 +8,7 @@ import com.picoder.sample.todolist.data.model.ToDoData
 interface ToDoDao {
 
     @Query("SELECT * FROM TODO_TABLE ORDER BY id ASC")
-    fun getAllData(): LiveData<List<ToDoData>>
+    fun getAllData(): LiveData<List<ToDoData>> // use live data here, any change on data make this query change result then it will emit data to observer
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertData(toDoData: ToDoData)
@@ -23,7 +23,7 @@ interface ToDoDao {
     suspend fun deleteAll()
 
     @Query("SELECT * FROM TODO_TABLE WHERE title LIKE :searchQuery")
-    fun searchData(searchQuery: String): LiveData<List<ToDoData>>
+    fun searchData(searchQuery: String): LiveData<List<ToDoData>> // use live data here, any change on data make this result of this query change then it will emit result of query to observer
 
     @Query("SELECT * FROM TODO_TABLE ORDER BY CASE WHEN priority LIKE 'H%' THEN 1 WHEN priority LIKE 'M%' THEN 2 WHEN priority LIKE 'L%' THEN 3 END")
     fun sortByHighPriority(): LiveData<List<ToDoData>>

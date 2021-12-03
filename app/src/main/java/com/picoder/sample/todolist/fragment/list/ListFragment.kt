@@ -10,19 +10,18 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.picoder.sample.todolist.R
 import com.picoder.sample.todolist.data.model.ToDoData
 import com.picoder.sample.todolist.data.viewmodel.ToDoViewModel
+import com.picoder.sample.todolist.databinding.FragmentListBinding
 import com.picoder.sample.todolist.fragment.SharedViewModel
 import com.picoder.sample.todolist.fragment.list.adapter.ListAdapter
 import com.picoder.sample.todolist.utils.hideKeyboard
+import com.picoder.sample.todolist.utils.observeOnce
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
-import kotlinx.android.synthetic.main.fragment_list.*
-import kotlinx.android.synthetic.main.fragment_list.view.*
 
 
 class ListFragment : Fragment(), SearchView.OnQueryTextListener {
@@ -33,25 +32,30 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private val adapter: ListAdapter by lazy { ListAdapter() }
 
+    private var _binding: FragmentListBinding? = null
+
+    private val binding get() = _binding!!
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_list, container, false)
+        _binding = FragmentListBinding.inflate(inflater)
 
-        setupRecyclerView(view)
+        setupRecyclerView()
 
-        todoViewModel.getAllData.observe(viewLifecycleOwner, Observer { data ->
+        todoViewModel.getAllData.observe(viewLifecycleOwner, { data ->
             sharedViewModel.checkIfDataEmpty(data)
             adapter.setData(data)
+            binding.recyclerView.scheduleLayoutAnimation() // call this everytime adapter update data
         })
 
         sharedViewModel.emptyDatabase.observe(viewLifecycleOwner, {
             showEmptyDataView(it)
         })
 
-        view.floatingActionButton.setOnClickListener {
+        binding.floatingActionButton.setOnClickListener {
             findNavController().navigate(R.id.action_listFragment_to_addFragment)
         }
 
@@ -62,16 +66,18 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         // hide soft keyboard
         hideKeyboard(requireActivity())
 
-        return view
+        return binding.root
     }
 
-    private fun setupRecyclerView(view: View) {
-        val recyclerView = view.recyclerView
+    private fun setupRecyclerView() {
+        val recyclerView = binding.recyclerView
         recyclerView.adapter = adapter
-        recyclerView.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
-        recyclerView.itemAnimator = SlideInUpAnimator().apply {
+        recyclerView.layoutManager =
+            StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        /*recyclerView.itemAnimator = SlideInUpAnimator().apply {
             addDuration = 350
-        }
+        }*/
+        //binding.recyclerView.scheduleLayoutAnimation()
         //
         swipeToDelete(recyclerView)
     }
@@ -89,14 +95,14 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
                     Toast.LENGTH_LONG
                 ).show()
                 // restore item
-                restoreDeletedData(viewHolder.itemView, itemToDelete, viewHolder.adapterPosition)
+                restoreDeletedData(viewHolder.itemView, itemToDelete)
             }
         }
         val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
         itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
-    private fun restoreDeletedData(view: View, deletedItem: ToDoData, position: Int) {
+    private fun restoreDeletedData(view: View, deletedItem: ToDoData) {
         val snackBar = Snackbar.make(
             view, "Deleted '${deletedItem.title}'",
             Snackbar.LENGTH_LONG
@@ -104,18 +110,17 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         //snackBar.anchorView = floatingActionButton
         snackBar.setAction("Undo") {
             todoViewModel.insertData(deletedItem)
-            adapter.notifyItemChanged(position)
         }
         snackBar.show()
     }
 
     private fun showEmptyDataView(isEmpty: Boolean) {
         if (isEmpty) {
-            view?.iv_no_data?.visibility = View.VISIBLE
-            view?.tv_no_data?.visibility = View.VISIBLE
+            binding.ivNoData.visibility = View.VISIBLE
+            binding.tvNoData.visibility = View.VISIBLE
         } else {
-            view?.iv_no_data?.visibility = View.INVISIBLE
-            view?.tv_no_data?.visibility = View.INVISIBLE
+            binding.ivNoData.visibility = View.INVISIBLE
+            binding.tvNoData.visibility = View.INVISIBLE
         }
     }
 
@@ -132,16 +137,16 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
             R.id.menu_delete_all -> confirmRemoval()
             R.id.menu_priority_high -> todoViewModel.sortByHighPriority.observe(
                 this,
-                Observer { adapter.setData(it) })
+                { adapter.setData(it) })
             R.id.menu_priority_low -> todoViewModel.sortByLowPriority.observe(
                 this,
-                Observer { adapter.setData(it) })
+                { adapter.setData(it) })
         }
         return super.onOptionsItemSelected(item)
     }
 
     private fun confirmRemoval() {
-        var builder = AlertDialog.Builder(requireContext())
+        val builder = AlertDialog.Builder(requireContext())
         builder.setPositiveButton("Yes") { _, _ ->
             todoViewModel.deleteAllData()
             Toast.makeText(
@@ -172,9 +177,17 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     private fun searchData(query: String) {
-        // any problem if call observe many times
-        todoViewModel.searchData(query).observe(this, Observer {
-            it?.let { adapter.setData(it) }
+        todoViewModel.searchData(query).observeOnce(this, Observer {
+            it?.let {
+                adapter.setData(it)
+                binding.recyclerView.scheduleLayoutAnimation()
+            }
+
         })
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }
