@@ -1,2 +1,3 @@
 # todo-list-app
-this app will demo how to use android architecture components, clean architecture combine with mvvm, redux
+This App demo how to apply clean architecture, mvvm architectural patterns, Hilt dependency injection
+Jetpack components: Room, Navigation

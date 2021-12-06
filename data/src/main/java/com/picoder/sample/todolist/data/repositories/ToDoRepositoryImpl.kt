@@ -50,7 +50,7 @@ class ToDoRepositoryImpl @Inject constructor(private val toDoDao: ToDoDao) : ToD
     }
 
     override suspend fun searchToDos(keywords: String): List<ToDoEntity> {
-        return toDoDao.searchData(keywords)
+        return toDoDao.searchData("%$keywords%")
     }
 
     override suspend fun sortByHighPriority(): List<ToDoEntity> {
