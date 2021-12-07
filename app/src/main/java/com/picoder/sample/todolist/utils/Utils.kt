@@ -2,10 +2,16 @@ package com.picoder.sample.todolist.utils
 
 import android.app.Activity
 import android.content.Context
+import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.AdapterView
+import android.widget.Spinner
+import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import com.picoder.sample.todolist.R
 
 fun hideKeyboard(activity: Activity) {
     val inputMethodManager =
@@ -38,4 +44,42 @@ fun <T> LiveData<T>.observeOnce(lifecycleOwner: LifecycleOwner, myObserver: Obse
         }
     })
 
+}
+
+fun Spinner.setupListener(context: Context) {
+    val listener: AdapterView.OnItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            when (position) {
+                0 -> (parent?.getChildAt(0) as TextView).setTextColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.red
+                    )
+                )
+
+                1 -> (parent?.getChildAt(0) as TextView).setTextColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.yellow
+                    )
+                )
+
+                2 -> (parent?.getChildAt(0) as TextView).setTextColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.green
+                    )
+                )
+            }
+        }
+
+        override fun onNothingSelected(p0: AdapterView<*>?) {}
+
+    }
+    this.onItemSelectedListener = listener
+}
+
+
+fun validateDataFromInput(title: String, description: String): Boolean {
+    return !(title.isEmpty() || description.isEmpty())
 }

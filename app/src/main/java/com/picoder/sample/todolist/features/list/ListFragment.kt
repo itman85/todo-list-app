@@ -13,19 +13,16 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.picoder.sample.todolist.R
-import com.picoder.sample.todolist.model.ToDoItem
 import com.picoder.sample.todolist.databinding.FragmentListBinding
 import com.picoder.sample.todolist.domain.entity.Priority
-import com.picoder.sample.todolist.features.SharedViewModel
 import com.picoder.sample.todolist.features.list.adapter.ListAdapter
+import com.picoder.sample.todolist.model.ToDoItem
 import com.picoder.sample.todolist.utils.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 
 // need entry point to create ListToDoViewModel(HiltViewModel)
 @AndroidEntryPoint
 class ListFragment : Fragment(), SearchView.OnQueryTextListener {
-
-    private val sharedViewModel: SharedViewModel by viewModels()
 
     private val listToDoViewModel: ListToDoViewModel by viewModels()
 
@@ -67,12 +64,11 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private fun setupDataObserve(){
         listToDoViewModel.getAllData.observe(viewLifecycleOwner, { data ->
-            sharedViewModel.checkIfDataEmpty(data)
             adapter.setData(data)
             binding.recyclerView.scheduleLayoutAnimation() // call this everytime adapter update data
         })
 
-        sharedViewModel.emptyDatabase.observe(viewLifecycleOwner, {
+        listToDoViewModel.isEmptyData.observe(viewLifecycleOwner, {
             showEmptyDataView(it)
         })
 

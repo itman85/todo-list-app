@@ -21,6 +21,7 @@ class ListToDoViewModel @Inject constructor(
     private val addToDo: AddToDo
 ) : ViewModel() {
 
+    // with mvvm, it will have many live data to observe, the view model will grow bigger as having more logic
     private val _allData = MutableLiveData<List<ToDoItem>>()
 
     val getAllData: LiveData<List<ToDoItem>> = _allData
@@ -33,10 +34,17 @@ class ListToDoViewModel @Inject constructor(
 
     val getSortResultData: LiveData<List<ToDoItem>> = _sortData
 
-    private suspend fun loadDataAndNotify(){
-        _allData.postValue(loadAllToDoList.loadAllToDos().map {
+    private val _emptyData: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    val isEmptyData: LiveData<Boolean> = _emptyData
+
+
+    private suspend fun loadDataAndNotify() {
+        val dataList = loadAllToDoList.loadAllToDos().map {
             ToDoItem(it.id, it.title, it.priority, it.description)
-        })
+        }
+        _allData.postValue(dataList)
+        _emptyData.postValue(dataList.isEmpty())
     }
 
     fun restoreToDoItem(toDoData: ToDoItem) {

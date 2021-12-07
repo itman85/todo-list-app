@@ -1,3 +1,4 @@
 # todo-list-app
-This App demo how to apply clean architecture, mvvm architectural patterns, Hilt dependency injection
-Jetpack components: Room, Navigation
+This App demo how to apply CLEAN architecture, MVVM architectural patterns, Hilt DI
+Jetpack components: KTX, Room, Navigation, LiveData, ViewBinding, ViewModel, LifeCycle
+Single activity with multiple fragments use NavHostFragment

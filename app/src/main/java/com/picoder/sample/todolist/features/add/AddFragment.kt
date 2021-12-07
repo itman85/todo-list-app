@@ -10,16 +10,15 @@ import com.picoder.sample.todolist.R
 import com.picoder.sample.todolist.model.ToDoItem
 import com.picoder.sample.todolist.databinding.FragmentAddBinding
 import com.picoder.sample.todolist.domain.entity.toPriority
-import com.picoder.sample.todolist.features.SharedViewModel
+import com.picoder.sample.todolist.utils.setupListener
 import com.picoder.sample.todolist.utils.showKeyboard
+import com.picoder.sample.todolist.utils.validateDataFromInput
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AddFragment : Fragment() {
 
     private val addToDoViewModel: AddToDoViewModel by viewModels()
-
-    private val sharedViewModel: SharedViewModel by viewModels()
 
     private var _binding: FragmentAddBinding? = null
 
@@ -39,7 +38,7 @@ class AddFragment : Fragment() {
 
         binding.edtTitle.postDelayed({ showKeyboard(requireActivity()) }, 50)
 
-        binding.spinnerPriority.onItemSelectedListener = sharedViewModel.listener
+        binding.spinnerPriority.setupListener(requireContext())
 
         return binding.root
     }
@@ -60,7 +59,7 @@ class AddFragment : Fragment() {
         val priority = binding.spinnerPriority.selectedItem.toString()
         val description = binding.edtDescription.text.toString()
 
-        val validate = sharedViewModel.validateDataFromInput(title, description)
+        val validate = validateDataFromInput(title, description)
         if (validate) {
             val newToDoData = ToDoItem(0, title, priority.toPriority(), description)
             addToDoViewModel.addToDo(newToDoData)

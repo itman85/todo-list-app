@@ -13,15 +13,14 @@ import com.picoder.sample.todolist.model.ToDoItem
 import com.picoder.sample.todolist.databinding.FragmentUpdateBinding
 import com.picoder.sample.todolist.domain.entity.toIndex
 import com.picoder.sample.todolist.domain.entity.toPriority
-import com.picoder.sample.todolist.features.SharedViewModel
+import com.picoder.sample.todolist.utils.setupListener
 import com.picoder.sample.todolist.utils.showKeyboard
+import com.picoder.sample.todolist.utils.validateDataFromInput
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
 class UpdateFragment : Fragment() {
-
-    private val sharedViewModel: SharedViewModel by viewModels()
 
     private val updateToDoViewModel: UpdateToDoViewModel by viewModels()
 
@@ -44,7 +43,7 @@ class UpdateFragment : Fragment() {
         binding.edtCurrentTitle.setText(args.currentItem.title)
         binding.edtCurrentDescription.setText(args.currentItem.description)
         binding.spinnerCurrentPriority.setSelection(args.currentItem.priority.toIndex())
-        binding.spinnerCurrentPriority.onItemSelectedListener = sharedViewModel.listener
+        binding.spinnerCurrentPriority.setupListener(requireContext())
 
         binding.edtCurrentTitle.requestFocus()
 
@@ -89,7 +88,7 @@ class UpdateFragment : Fragment() {
         val description = binding.edtCurrentDescription.text.toString()
         val priority = binding.spinnerCurrentPriority.selectedItem.toString()
 
-        val validation = sharedViewModel.validateDataFromInput(title, description)
+        val validation = validateDataFromInput(title, description)
         if (validation) {
             val updatedItem = ToDoItem(
                 args.currentItem.id,
