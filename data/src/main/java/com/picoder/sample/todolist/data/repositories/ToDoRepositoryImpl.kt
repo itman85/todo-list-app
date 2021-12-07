@@ -4,6 +4,7 @@ import com.picoder.sample.todolist.data.database.dao.ToDoDao
 import com.picoder.sample.todolist.data.database.entity.ToDoData
 import com.picoder.sample.todolist.domain.entity.ToDoEntity
 import com.picoder.sample.todolist.domain.repository.ToDoRepository
+import io.reactivex.rxjava3.core.Completable
 import javax.inject.Inject
 
 class ToDoRepositoryImpl @Inject constructor(private val toDoDao: ToDoDao) : ToDoRepository {
@@ -23,26 +24,30 @@ class ToDoRepositoryImpl @Inject constructor(private val toDoDao: ToDoDao) : ToD
         )
     }
 
-    override suspend fun updateToDo(toDoEntity: ToDoEntity) {
-        toDoDao.updateData(
-            ToDoData(
-                toDoEntity.id,
-                toDoEntity.title,
-                toDoEntity.priority,
-                toDoEntity.description
+    override fun updateToDo(toDoEntity: ToDoEntity):Completable {
+        return Completable.fromAction {
+            toDoDao.updateData(
+                ToDoData(
+                    toDoEntity.id,
+                    toDoEntity.title,
+                    toDoEntity.priority,
+                    toDoEntity.description
+                )
             )
-        )
+        }
     }
 
-    override suspend fun deleteToDo(toDoEntity: ToDoEntity) {
-        toDoDao.deleteItem(
-            ToDoData(
-                toDoEntity.id,
-                toDoEntity.title,
-                toDoEntity.priority,
-                toDoEntity.description
+    override fun deleteToDo(toDoEntity: ToDoEntity):Completable {
+        return Completable.fromAction {
+            toDoDao.deleteItem(
+                ToDoData(
+                    toDoEntity.id,
+                    toDoEntity.title,
+                    toDoEntity.priority,
+                    toDoEntity.description
+                )
             )
-        )
+        }
     }
 
     override suspend fun deleteAllToDoList() {

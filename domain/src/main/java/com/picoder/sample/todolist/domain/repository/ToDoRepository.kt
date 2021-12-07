@@ -1,6 +1,7 @@
 package com.picoder.sample.todolist.domain.repository
 
 import com.picoder.sample.todolist.domain.entity.ToDoEntity
+import io.reactivex.rxjava3.core.Completable
 
 interface ToDoRepository {
 
@@ -8,9 +9,9 @@ interface ToDoRepository {
 
     suspend fun addToDo(toDoEntity: ToDoEntity)
 
-    suspend fun updateToDo(toDoEntity: ToDoEntity)
+    fun updateToDo(toDoEntity: ToDoEntity): Completable
 
-    suspend fun deleteToDo(toDoEntity: ToDoEntity)
+    fun deleteToDo(toDoEntity: ToDoEntity): Completable
 
     suspend fun deleteAllToDoList()
 

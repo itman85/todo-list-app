@@ -10,3 +10,4 @@ rootProject.name = "ToDo List App"
 include ':app'
 include ':domain'
 include ':data'
+include ':rx-redux'

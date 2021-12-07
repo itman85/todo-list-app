@@ -6,5 +6,5 @@ import javax.inject.Inject
 
 class UpdateToDo @Inject constructor(private val toDoRepository: ToDoRepository) {
 
-    suspend fun updateToDo(toDoEntity: ToDoEntity) = toDoRepository.updateToDo(toDoEntity)
+    fun updateToDo(toDoEntity: ToDoEntity) = toDoRepository.updateToDo(toDoEntity)
 }

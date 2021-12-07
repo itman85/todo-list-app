@@ -9,20 +9,20 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.picoder.sample.todolist.R
-import com.picoder.sample.todolist.model.ToDoItem
 import com.picoder.sample.todolist.databinding.FragmentUpdateBinding
 import com.picoder.sample.todolist.domain.entity.toIndex
 import com.picoder.sample.todolist.domain.entity.toPriority
+import com.picoder.sample.todolist.features.update.redux.UpdateToDoAction
+import com.picoder.sample.todolist.features.update.redux.UpdateToDoNavigation
 import com.picoder.sample.todolist.utils.setupListener
 import com.picoder.sample.todolist.utils.showKeyboard
-import com.picoder.sample.todolist.utils.validateDataFromInput
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
 class UpdateFragment : Fragment() {
 
-    private val updateToDoViewModel: UpdateToDoViewModel by viewModels()
+    private val viewModel: UpdateToDoViewModel by viewModels()
 
     private var _binding: FragmentUpdateBinding? = null
 
@@ -40,9 +40,6 @@ class UpdateFragment : Fragment() {
 
         setHasOptionsMenu(true)
 
-        binding.edtCurrentTitle.setText(args.currentItem.title)
-        binding.edtCurrentDescription.setText(args.currentItem.description)
-        binding.spinnerCurrentPriority.setSelection(args.currentItem.priority.toIndex())
         binding.spinnerCurrentPriority.setupListener(requireContext())
 
         binding.edtCurrentTitle.requestFocus()
@@ -50,6 +47,34 @@ class UpdateFragment : Fragment() {
         binding.edtCurrentTitle.postDelayed({ showKeyboard(requireActivity()) }, 50)
 
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.state.observe(viewLifecycleOwner, { state ->
+            binding.edtCurrentTitle.setText(state.updatedItem.title)
+            binding.edtCurrentDescription.setText(state.updatedItem.description)
+            binding.spinnerCurrentPriority.setSelection(state.updatedItem.priority.toIndex())
+
+        })
+
+        viewModel.nav.observe(viewLifecycleOwner, { nav ->
+            when (nav) {
+                is UpdateToDoNavigation.ShowMessageAndBackToList -> {
+                    Toast.makeText(requireContext(), nav.message, Toast.LENGTH_LONG).show()
+                    findNavController().navigate(R.id.action_updateFragment_to_listFragment)
+                }
+
+                is UpdateToDoNavigation.ShowErrorMessage -> Toast.makeText(
+                    requireContext(),
+                    nav.message,
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        })
+
+        viewModel.doAction(UpdateToDoAction.OpenScreen(args.currentItem))
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -68,12 +93,7 @@ class UpdateFragment : Fragment() {
     private fun confirmItemRemoval() {
         var builder = AlertDialog.Builder(requireContext())
         builder.setPositiveButton("Yes") { _, _ ->
-            updateToDoViewModel.deleteToDo(args.currentItem)
-            Toast.makeText(
-                requireContext(), "Successfully Removed: ${args.currentItem.title}",
-                Toast.LENGTH_LONG
-            ).show()
-            findNavController().navigate(R.id.action_updateFragment_to_listFragment)
+            viewModel.doAction(UpdateToDoAction.DeleteToDoItem)
         }
         builder.setNegativeButton("No") { _, _ ->
             //
@@ -87,22 +107,13 @@ class UpdateFragment : Fragment() {
         val title = binding.edtCurrentTitle.text.toString()
         val description = binding.edtCurrentDescription.text.toString()
         val priority = binding.spinnerCurrentPriority.selectedItem.toString()
-
-        val validation = validateDataFromInput(title, description)
-        if (validation) {
-            val updatedItem = ToDoItem(
-                args.currentItem.id,
+        viewModel.doAction(
+            UpdateToDoAction.UpdateToDoItem(
                 title,
                 priority.toPriority(),
                 description
             )
-            updateToDoViewModel.updateToDo(updatedItem)
-            Toast.makeText(requireContext(), "Successfully updated!", Toast.LENGTH_LONG).show()
-            findNavController().navigate(R.id.action_updateFragment_to_listFragment)
-        } else {
-            Toast.makeText(requireContext(), "Please input all fields!", Toast.LENGTH_LONG).show()
-        }
-
+        )
     }
 
     override fun onDestroy() {

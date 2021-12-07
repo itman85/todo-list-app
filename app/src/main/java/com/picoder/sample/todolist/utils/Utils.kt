@@ -12,6 +12,9 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.picoder.sample.todolist.R
+import io.reactivex.rxjava3.core.Observable
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 fun hideKeyboard(activity: Activity) {
     val inputMethodManager =
@@ -43,8 +46,28 @@ fun <T> LiveData<T>.observeOnce(lifecycleOwner: LifecycleOwner, myObserver: Obse
             removeObserver(Observer@ this)
         }
     })
-
 }
+
+/**
+ * Using Rx's throttling to improve navigation UX: clicking multiple times quickly should navigate only once without any delay
+ * (using "debounce" introducing delay)
+ *
+ * @param A: input stream of any value of [A] (mostly Redux Action)
+ * @param N: output navigation provided by [navigationTransformer]
+ */
+fun <A : Any, N : Any> Observable<A>.navigationWithThrottling(
+    throttleMilliseconds: Long,
+    navigationTransformer: (A) -> N?
+): Observable<N> =
+    this
+        .map { action ->
+            Optional.ofNullable(navigationTransformer(action))
+        }
+        // important to filter before throttling, so Optional.empty doesn't count into throttling,
+        // otherwise we would miss navigation of the previous action product empty nav.
+        .filter { it.isPresent }
+        .throttleFirst(throttleMilliseconds, TimeUnit.MILLISECONDS)
+        .map { it.get() }
 
 fun Spinner.setupListener(context: Context) {
     val listener: AdapterView.OnItemSelectedListener = object : AdapterView.OnItemSelectedListener {
