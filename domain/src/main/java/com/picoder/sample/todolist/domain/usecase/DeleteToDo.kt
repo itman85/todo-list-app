@@ -8,5 +8,5 @@ class DeleteToDo @Inject constructor(private val repository: ToDoRepository) {
 
     fun deleteToDo(toDoEntity: ToDoEntity) = repository.deleteToDo(toDoEntity)
 
-    suspend fun deleteAllToDos() = repository.deleteAllToDoList()
+    fun deleteAllToDos() = repository.deleteAllToDoList()
 }

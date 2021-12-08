@@ -2,22 +2,23 @@ package com.picoder.sample.todolist.domain.repository
 
 import com.picoder.sample.todolist.domain.entity.ToDoEntity
 import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Single
 
 interface ToDoRepository {
 
-    suspend fun getAllToDoList(): List<ToDoEntity>
+    fun getAllToDoList(): Single<List<ToDoEntity>>
 
-    suspend fun addToDo(toDoEntity: ToDoEntity)
+    fun addToDo(toDoEntity: ToDoEntity): Completable
 
     fun updateToDo(toDoEntity: ToDoEntity): Completable
 
     fun deleteToDo(toDoEntity: ToDoEntity): Completable
 
-    suspend fun deleteAllToDoList()
+    fun deleteAllToDoList(): Completable
 
-    suspend fun searchToDos(keywords: String): List<ToDoEntity>
+    fun searchToDos(keywords: String): Single<List<ToDoEntity>>
 
-    suspend fun sortByHighPriority(): List<ToDoEntity>
+    fun sortByHighPriority(): Single<List<ToDoEntity>>
 
-    suspend fun sortByLowPriority(): List<ToDoEntity>
+    fun sortByLowPriority(): Single<List<ToDoEntity>>
 }

@@ -5,5 +5,5 @@ import javax.inject.Inject
 
 class LoadAllToDoList @Inject constructor(private val toDoRepository: ToDoRepository) {
 
-    suspend fun loadAllToDos() = toDoRepository.getAllToDoList()
+    fun loadAllToDos() = toDoRepository.getAllToDoList()
 }

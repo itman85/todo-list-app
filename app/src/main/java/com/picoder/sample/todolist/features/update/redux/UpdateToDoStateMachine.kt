@@ -69,7 +69,7 @@ class UpdateToDoStateMachine @Inject constructor(
         { actions, _ ->
             actions.ofType(UpdateToDoAction.SaveData::class.java)
                 .switchMap { action ->
-                    updateToDo.updateToDo(action.item.toEntity())
+                    updateToDo.updateToDo(action.item)
                         .subscribeOn(Schedulers.io())
                         .andThen(Observable.defer {
                             Observable.just(UpdateToDoAction.SaveDataSuccess)
@@ -83,7 +83,7 @@ class UpdateToDoStateMachine @Inject constructor(
         { actions, state ->
             actions.ofType(UpdateToDoAction.DeleteToDoItem::class.java)
                 .switchMap {
-                    deleteToDo.deleteToDo(state().updatedItem.toEntity())
+                    deleteToDo.deleteToDo(state().updatedItem)
                         .subscribeOn(Schedulers.io())
                         .andThen(Observable.defer {
                             Observable.just(UpdateToDoAction.DeleteDataSuccess("Successfully Removed: ${state().updatedItem.title}"))
@@ -103,9 +103,7 @@ class UpdateToDoStateMachine @Inject constructor(
             deleteDataSideEffect
         )
 
-    override fun reducer(): Reducer<UpdateToDoState, UpdateToDoAction> = this::reducer
-
-    private fun reducer(state: UpdateToDoState, action: UpdateToDoAction): UpdateToDoState {
+    override fun reducer(state: UpdateToDoState, action: UpdateToDoAction): UpdateToDoState {
         return when (action) {
             is UpdateToDoAction.OpenScreen -> state.copy(updatedItem = action.item)
 

@@ -20,7 +20,7 @@ abstract class BaseStateMachine<S : Any, A : Any, N : Any> {
 
     protected abstract fun sideEffects(): List<SideEffect<S, A>>
 
-    protected abstract fun reducer(): Reducer<S, A>
+    private fun reducer(): Reducer<S, A> = this::reducer
 
     open fun navigation(): Observable<N> = nav
 
@@ -35,4 +35,6 @@ abstract class BaseStateMachine<S : Any, A : Any, N : Any> {
         .doOnNext {
             Log.i(this.javaClass.simpleName, "state updated $it")
         }
+
+    protected abstract fun reducer(state: S, action: A): S
 }

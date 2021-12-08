@@ -5,5 +5,5 @@ import javax.inject.Inject
 
 class SearchToDoList @Inject constructor(private val repository: ToDoRepository) {
 
-    suspend fun searchToDoList(keywords: String) = repository.searchToDos(keywords)
+    fun searchToDoList(keywords: String) = repository.searchToDos(keywords)
 }

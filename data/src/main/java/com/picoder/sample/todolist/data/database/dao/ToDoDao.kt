@@ -10,7 +10,7 @@ interface ToDoDao {
     fun getAllData(): List<ToDoData>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertData(toDoData: ToDoData)
+    fun insertData(toDoData: ToDoData)
 
     @Update
     fun updateData(toDoData: ToDoData)
@@ -19,7 +19,7 @@ interface ToDoDao {
     fun deleteItem(toDoData: ToDoData)
 
     @Query("DELETE FROM TODO_TABLE")
-    suspend fun deleteAll()
+    fun deleteAll()
 
     @Query("SELECT * FROM TODO_TABLE WHERE title LIKE :searchQuery")
     fun searchData(searchQuery: String): List<ToDoData>

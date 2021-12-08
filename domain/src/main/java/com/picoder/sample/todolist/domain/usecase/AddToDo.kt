@@ -6,5 +6,5 @@ import javax.inject.Inject
 
 class AddToDo @Inject constructor(private val toDoRepository: ToDoRepository) {
 
-    suspend fun addToDo(toDoEntity: ToDoEntity) = toDoRepository.addToDo(toDoEntity)
+    fun addToDo(toDoEntity: ToDoEntity) = toDoRepository.addToDo(toDoEntity)
 }

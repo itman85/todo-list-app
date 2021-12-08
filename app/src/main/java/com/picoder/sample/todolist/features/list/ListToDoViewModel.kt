@@ -1,11 +1,17 @@
 package com.picoder.sample.todolist.features.list
 
+import android.app.ListActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.picoder.sample.todolist.base.redux.BaseStateViewModel
 import com.picoder.sample.todolist.domain.entity.Priority
 import com.picoder.sample.todolist.domain.usecase.*
+import com.picoder.sample.todolist.features.list.redux.ListToDoAction
+import com.picoder.sample.todolist.features.list.redux.ListToDoNavigation
+import com.picoder.sample.todolist.features.list.redux.ListToDoState
+import com.picoder.sample.todolist.features.list.redux.ListToDoStateMachine
 import com.picoder.sample.todolist.model.ToDoItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -14,13 +20,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ListToDoViewModel @Inject constructor(
-    private val loadAllToDoList: LoadAllToDoList,
-    private val deleteToDo: DeleteToDo,
-    private val sortToDoList: SortToDoList,
-    private val searchToDoList: SearchToDoList,
-    private val addToDo: AddToDo
-) : ViewModel() {
+    stateMachine: ListToDoStateMachine
+) : BaseStateViewModel<ListToDoState, ListToDoAction, ListToDoNavigation>(stateMachine) {
 
+    /*
     // with mvvm, it will have many live data to observe, the view model will grow bigger as having more logic
     private val _allData = MutableLiveData<List<ToDoItem>>()
 
@@ -89,4 +92,6 @@ class ListToDoViewModel @Inject constructor(
             })
         }
     }
+
+     */
 }

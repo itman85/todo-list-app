@@ -21,6 +21,8 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.ToDoViewHolder>() {
 
     var dataList = emptyList<ToDoItem>()
 
+    lateinit var recyclerView: RecyclerView
+
     class ToDoViewHolder(private val binding: TodoItemLayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(toDoData: ToDoItem) {
@@ -63,6 +65,11 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.ToDoViewHolder>() {
 
     }
 
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        this.recyclerView = recyclerView
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ToDoViewHolder {
         return ToDoViewHolder.from(parent)
     }
@@ -80,5 +87,7 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.ToDoViewHolder>() {
         val diffResult = DiffUtil.calculateDiff(toDoDiffUtil)
         this.dataList = toDoData
         diffResult.dispatchUpdatesTo(this)
+        // play animation as recycler view data changed
+        this.recyclerView.scheduleLayoutAnimation()
     }
 }
