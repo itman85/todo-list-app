@@ -10,6 +10,8 @@ interface ToDoRepository {
 
     fun addToDo(toDoEntity: ToDoEntity): Completable
 
+    suspend fun addToDoSuspend(toDoEntity: ToDoEntity)
+
     fun updateToDo(toDoEntity: ToDoEntity): Completable
 
     fun deleteToDo(toDoEntity: ToDoEntity): Completable

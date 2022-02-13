@@ -26,6 +26,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     // in NavHostFragment has a navigation controller
+    // Todo can we use findNavController().navigate(Fragment instance)? in this way we dont need setup navigation graph
+    // it will flexible to add/remove fragment without maintain app_navigation.xml
     private fun findNavigationController(): NavController {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.navHostFragment) as NavHostFragment

@@ -27,6 +27,17 @@ class ToDoRepositoryImpl @Inject constructor(private val toDoDao: ToDoDao) : ToD
         }
     }
 
+    override suspend fun addToDoSuspend(toDoEntity: ToDoEntity) {
+        toDoDao.insertData(
+            ToDoData(
+                toDoEntity.id,
+                toDoEntity.title,
+                toDoEntity.priority,
+                toDoEntity.description
+            )
+        )
+    }
+
     override fun updateToDo(toDoEntity: ToDoEntity): Completable {
         return Completable.fromAction {
             toDoDao.updateData(
