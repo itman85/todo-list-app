@@ -8,3 +8,4 @@ Single activity with multiple fragments use NavHostFragment
 - Search / Sort / Delete All To-Do items
 - Undo deleted To-Do item
 ### Note: this branch demo how to implement Redux use both Rx (list, update feature) and Coroutine (add feature)
+### Co-Redux is predecated and move to FlowRedux
