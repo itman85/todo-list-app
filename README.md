@@ -1,5 +1,5 @@
 # todo-list-app
-This App demo how to apply CLEAN architecture, Redux Pattern (RxKotlin 3.0 + Coroutine implementation) & MVVM architectural patterns, Hilt DI\
+This Android App demo how to apply CLEAN architecture, Redux Pattern (RxKotlin 3.0 + Coroutine implementation) & MVVM architectural patterns, Hilt DI\
 Jetpack components: KTX, Room, Navigation, LiveData, ViewBinding, ViewModel, LifeCycle\
 Single activity with multiple fragments use NavHostFragment
 ### Main features of this app
